@@ -69,8 +69,22 @@ function updateTutorProfile($email, $firstName, $lastName, $age, $gender, $passw
     $price = sanitize($price);
     $photo = sanitize($photo);
 
-    // Query to update tutor profile
-    $sql = "UPDATE tutor SET fname = '$firstName', lname = '$lastName', age = '$age', gender = '$gender', password = '$password', city = '$city', bio = '$bio', price = '$price', photo = '$photo' WHERE email = '$email'";
+    // If a new photo is uploaded, update the photo in the database
+    if ($photo) {
+        // Move uploaded photo to the tutorImages folder
+        $upload_dir = "tutorImages/";
+        $photo_path = $upload_dir . $photo;
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $photo_path)) {
+            // Update the tutor's profile with the new photo name
+            $sql = "UPDATE tutor SET fname = '$firstName', lname = '$lastName', age = '$age', gender = '$gender', password = '$password', city = '$city', bio = '$bio', price = '$price', photo = '$photo' WHERE email = '$email'";
+        } else {
+            echo "Failed to move uploaded file.";
+            return false; // Failed to move uploaded file
+        }
+    } else {
+        // No new photo uploaded, retain the existing photo name
+        $sql = "UPDATE tutor SET fname = '$firstName', lname = '$lastName', age = '$age', gender = '$gender', password = '$password', city = '$city', bio = '$bio', price = '$price' WHERE email = '$email'";
+    }
 
     // Execute query
     if ($mysql->query($sql) === TRUE) {
@@ -176,11 +190,6 @@ if (!$tutorProfile) {
                 };
                 reader.readAsDataURL(e.target.files[0]);
             });
-
-            // Display tutor profile photo in photoPreview
-            let tutorPhoto = "<?php echo $tutorProfile['photo']; ?>";
-            let photoPreview = document.getElementById('photoPreview');
-            photoPreview.src = "../Web-Phase2/tutorImages/" + tutorPhoto;
         });
     </script>
 </head>
@@ -192,7 +201,7 @@ if (!$tutorProfile) {
                 <div class="nav-links">
                     <ul>
                         <li><a href="tutorHome.php">Home</a></li>
-                        <li><a href="tutorReq.php">Requests</a></li>
+                        <li><a href="tutorRequests.php">Requests</a></li>
                         <li><a href="tutorSessions.php">Sessions</a></li>
                         <li><a href="tutorRatings.php">Ratings/Reviews</a></li>
                     </ul>
@@ -202,7 +211,7 @@ if (!$tutorProfile) {
                         <img class="img2" src="../Web-Phase2/tutorImages/<?php echo $tutorProfile['photo']; ?>" alt="User Profile Picture">
                         <div class="menu">
                             <ul class="list">
-                                <li><a href="TutorPM.php">manage profile</a></li>
+                                <li><a href="tutorPM.php">manage profile</a></li>
                                 <li class="hehe"><a href="index.php">Log out</a></li>
                             </ul>
                         </div>

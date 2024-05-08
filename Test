@@ -72,7 +72,7 @@ function updateTutorProfile($email, $firstName, $lastName, $age, $gender, $passw
     // If a new photo is uploaded, update the photo in the database
     if ($photo) {
         // Move uploaded photo to the tutorImages folder
-        $upload_dir = "Web-Phase2/tutorImages/";
+        $upload_dir = "tutorImages/";
         $photo_path = $upload_dir . $photo;
         if (move_uploaded_file($_FILES['photo']['tmp_name'], $photo_path)) {
             // Update the tutor's profile with the new photo name
@@ -134,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $city = $_POST['city'];
             $bio = $_POST['bio'];
             $price = $_POST['price'];
-            $photo = $_FILES['photo']['name']; // Get photo filename
+            $photo = isset($_FILES['photo']['name']) ? $_FILES['photo']['name'] : ''; // Get photo filename
             updateTutorProfile($email, $firstName, $lastName, $age, $gender, $password, $city, $bio, $price, $photo);
         } else {
             echo "<script>alert('Please fill out all mandatory fields.');</script>";
@@ -143,22 +143,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Display confirmation message
         echo "<script>
             if (confirm('Are you sure you want to delete your account?')) {
-                // No redirect here
-            } else {
-                event.preventDefault(); // Cancel form submission
+                window.location.href = 'tutorPM.php?delete=true'; // Redirect to process deletion
             }
         </script>";
-
-        // Delete tutor account
-        if (deleteTutorAccount($email)) {
-            // Account deleted successfully, redirect to login page
-            session_destroy();
-            header("Location: loginTutor.php");
-            exit();
-        } else {
-            echo "<script>alert('Failed to delete account. Please try again.');</script>";
-        }
     }
+}
+
+// Process account deletion if confirmed
+if (isset($_GET['delete']) && $_GET['delete'] == 'true') {
+    deleteTutorAccount($email);
+    header("Location: index.php"); // Redirect to homepage after deletion
+    exit();
 }
 
 // Display tutor profile information
@@ -188,14 +183,12 @@ if (!$tutorProfile) {
         document.addEventListener("DOMContentLoaded", function() {
             // JavaScript code for displaying selected photo
             document.getElementById("photo").addEventListener("change", function(e) {
-                var file = this.files[0];
-                if (file) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.getElementById("photoPreview").src = e.target.result;
-                    }
-                    reader.readAsDataURL(file);
-                }
+                let reader = new FileReader();
+                reader.onload = function() {
+                    let output = document.getElementById('photoPreview');
+                    output.src = reader.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
             });
         });
     </script>
@@ -203,18 +196,76 @@ if (!$tutorProfile) {
 <body>
     <div class="wrapper">
         <header>
-            <!-- Navigation bar -->
-            <!-- Assuming the navigation bar code is included here -->
+            <nav>
+                <a href="tutorHome.php"><img src="images/webLogo1.png" alt="logo"></a>
+                <div class="nav-links">
+                    <ul>
+                        <li><a href="tutorHome.php">Home</a></li>
+                        <li><a href="tutorRequests.php">Requests</a></li>
+                        <li><a href="tutorSessions.php">Sessions</a></li>
+                        <li><a href="tutorRatings.php">Ratings/Reviews</a></li>
+                    </ul>
+                </div>
+                <div class="user-profile">
+                    <div class="menutoggle">
+                        <img class="img2" src="../Web-Phase2/tutorImages/<?php echo $tutorProfile['photo']; ?>" alt="User Profile Picture">
+                        <div class="menu">
+                            <ul class="list">
+                                <li><a href="tutorPM.php">manage profile</a></li>
+                                <li class="hehe"><a href="index.php">Log out</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <h1 class="header1">Lanturn</h1>
         </header>
         <section>
             <div class="profile-form">
-                <!-- Profile management form -->
-                <!-- Assuming the profile management form code is included here -->
+                <h2 class="header3">Profile management</h2>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
+                    <label class="bb3" for="firstName">First Name<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="firstName" placeholder="John" value="<?php echo $tutorProfile['fname']; ?>">
+
+                    <label class="bb3" for="lastName">Last Name<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="lastName" placeholder="Doe" value="<?php echo $tutorProfile['lname']; ?>">
+
+                    <label class="bb3" for="age">Age<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="age" placeholder="22" value="<?php echo $tutorProfile['age']; ?>">
+
+                    <label class="bb3" for="gender">Gender<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="gender" placeholder="female or male" value="<?php echo $tutorProfile['gender']; ?>">
+
+                    <label class="bb3" for="email">Email Address<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="email" name="email" required placeholder="name@example.com" value="<?php echo $tutorProfile['email']; ?>" readonly>
+
+                    <label class="bb3" for="password">Password<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="password" placeholder="**********" value="<?php echo $tutorProfile['password']; ?>">
+
+                    <label class="bb3" for="city">City<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="city" placeholder="Riyadh" value="<?php echo $tutorProfile['city']; ?>">
+
+                    <label class="bb3" for="bio">Bio<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="bio" placeholder="Short bio including languages spoken and cultural knowledge" value="<?php echo $tutorProfile['bio']; ?>">
+
+                    <label class="bb3" for="price">Price<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="price" placeholder="50" value="<?php echo $tutorProfile['price']; ?>">
+
+                    <div class="bb3">
+                        <button id="saveChangesButton" class="accept" name="saveChanges">Save Changes</button>
+                        <button id="deleteAccountButton" class="reject" name="deleteAccount">Delete Account</button>
+                    </div>
+                </form>
+            </div>
+            <div class="right-column">
+                <label class="label" for="photo">Upload Photo<br>(JPG/PNG, max 5 MB):</label>
+                <input type="file" id="photo" name="photo" accept=".jpg, .png">
+                <img id="photoPreview" src="../Web-Phase2/tutorImages/<?php echo $tutorProfile['photo']; ?>" alt="Photo Preview" class="default-preview">
             </div>
         </section>
         <footer>
-            <!-- Footer section -->
-            <!-- Assuming the footer section code is included here -->
+            <a href="contact.php">Contact us</a>
+            <p class="copyright">Created by KSU Students!<br>&copy; 2024 Lanturn</p>
         </footer>
     </div>
 </body>

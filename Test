@@ -234,4 +234,39 @@ if (!$tutorProfile) {
                     <input class="bb3" type="text" name="age" placeholder="22" value="<?php echo $tutorProfile['age']; ?>">
 
                     <label class="bb3" for="gender">Gender<span class="mandatory">*</span>:</label>
-                   
+                    <input class="bb3" type="text" name="gender" placeholder="female or male" value="<?php echo $tutorProfile['gender']; ?>">
+
+                    <label class="bb3" for="email">Email Address<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="email" name="email" required placeholder="name@example.com" value="<?php echo $tutorProfile['email']; ?>" readonly>
+
+                    <label class="bb3" for="password">Password<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="password" placeholder="**********" value="<?php echo $tutorProfile['password']; ?>">
+
+                    <label class="bb3" for="city">City<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="city" placeholder="Riyadh" value="<?php echo $tutorProfile['city']; ?>">
+
+                    <label class="bb3" for="bio">Bio<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="bio" placeholder="Short bio including languages spoken and cultural knowledge" value="<?php echo $tutorProfile['bio']; ?>">
+
+                    <label class="bb3" for="price">Price<span class="mandatory">*</span>:</label>
+                    <input class="bb3" type="text" name="price" placeholder="50" value="<?php echo $tutorProfile['price']; ?>">
+
+                    <div class="bb3">
+                        <button id="saveChangesButton" class="accept" name="saveChanges">Save Changes</button>
+                        <button id="deleteAccountButton" class="reject" name="deleteAccount">Delete Account</button>
+                    </div>
+                </form>
+            </div>
+            <div class="right-column">
+                <label class="label" for="photo">Upload Photo<br>(JPG/PNG, max 5 MB):</label>
+                <input type="file" id="photo" name="photo" accept=".jpg, .png">
+                <img id="photoPreview" src="../Web-Phase2/tutorImages/<?php echo $tutorProfile['photo']; ?>" alt="Photo Preview" class="default-preview">
+            </div>
+        </section>
+        <footer>
+            <a href="contact.php">Contact us</a>
+            <p class="copyright">Created by KSU Students!<br>&copy; 2024 Lanturn</p>
+        </footer>
+    </div>
+</body>
+</html>

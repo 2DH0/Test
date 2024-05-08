@@ -72,7 +72,7 @@ function updateTutorProfile($email, $firstName, $lastName, $age, $gender, $passw
     // If a new photo is uploaded, update the photo in the database
     if ($photo) {
         // Move uploaded photo to the tutorImages folder
-        $upload_dir = "tutorImages/";
+        $upload_dir = "../Web-Phase2/tutorImages/";
         $photo_path = $upload_dir . $photo;
         if (move_uploaded_file($_FILES['photo']['tmp_name'], $photo_path)) {
             // Update the tutor's profile with the new photo name

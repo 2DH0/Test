@@ -181,7 +181,7 @@ if (!$tutorProfile) {
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // JavaScript code for displaying selected photo and updating hidden input field
+            // JavaScript code for displaying selected photo
             document.getElementById("photo").addEventListener("change", function(e) {
                 let reader = new FileReader();
                 reader.onload = function() {
@@ -189,9 +189,6 @@ if (!$tutorProfile) {
                     output.src = reader.result;
                 };
                 reader.readAsDataURL(e.target.files[0]);
-
-                // Update hidden input field with the new photo name
-                document.getElementById('currentPhoto').value = e.target.files[0].name;
             });
         });
     </script>
@@ -258,9 +255,6 @@ if (!$tutorProfile) {
                         <button id="saveChangesButton" class="accept" name="saveChanges">Save Changes</button>
                         <button id="deleteAccountButton" class="reject" name="deleteAccount">Delete Account</button>
                     </div>
-
-                    <!-- Hidden input field to store current photo name -->
-                    <input type="hidden" id="currentPhoto" name="currentPhoto" value="<?php echo $tutorProfile['photo']; ?>">
                 </form>
             </div>
             <div class="right-column">

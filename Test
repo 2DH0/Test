@@ -72,11 +72,13 @@ function updateTutorProfile($email, $firstName, $lastName, $age, $gender, $passw
     // If a new photo is uploaded, update the photo in the database
     if ($photo) {
         // Move uploaded photo to the tutorImages folder
-        $upload_dir = "../Web-Phase2/tutorImages/";
+        $upload_dir = "tutorImages/";
         $photo_path = $upload_dir . $photo;
         if (move_uploaded_file($_FILES['photo']['tmp_name'], $photo_path)) {
             // Update the tutor's profile with the new photo name
             $sql = "UPDATE tutor SET fname = '$firstName', lname = '$lastName', age = '$age', gender = '$gender', password = '$password', city = '$city', bio = '$bio', price = '$price', photo = '$photo' WHERE email = '$email'";
+            // Output the SQL query before execution
+            echo "SQL Query: $sql <br>";
         } else {
             echo "Failed to move uploaded file.";
             return false; // Failed to move uploaded file
@@ -84,13 +86,16 @@ function updateTutorProfile($email, $firstName, $lastName, $age, $gender, $passw
     } else {
         // No new photo uploaded, retain the existing photo name
         $sql = "UPDATE tutor SET fname = '$firstName', lname = '$lastName', age = '$age', gender = '$gender', password = '$password', city = '$city', bio = '$bio', price = '$price' WHERE email = '$email'";
+        // Output the SQL query before execution
+        echo "SQL Query: $sql <br>";
     }
 
     // Execute query
     if ($mysql->query($sql) === TRUE) {
+        echo "Profile updated successfully <br>";
         return true; // Profile updated successfully
     } else {
-        echo "Error updating record: " . $mysql->error;
+        echo "Error updating record: " . $mysql->error . "<br>";
         return false; // Error in query execution
     }
 }
@@ -134,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $city = $_POST['city'];
             $bio = $_POST['bio'];
             $price = $_POST['price'];
-            $photo = isset($_FILES['photo']['name']) ? $_FILES['photo']['name'] : ''; // Get photo filename
+            $photo = $_FILES['photo']['name']; // Get photo filename
             updateTutorProfile($email, $firstName, $lastName, $age, $gender, $password, $city, $bio, $price, $photo);
         } else {
             echo "<script>alert('Please fill out all mandatory fields.');</script>";
